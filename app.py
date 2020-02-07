@@ -22,12 +22,13 @@ key = 'c278683aaaa94a36a1a82e84db0c4148'
 geocoder = OpenCageGeocode(key)
 full_url = "https://pastebin.com/UFJQRcun"
 
-
+#Transform the wall of text, close to yaml form to ease editing
 def convert_to_yaml(doc):
     new_doc = doc.replace("\r\n\r\n", "\r\n---")
     
     return new_doc
 
+#Remove remaining html tags, not needed for the rest of the program
 def clean_html (htmlText):
     word_starts_at = '">'
     word_ends = "</"
@@ -35,6 +36,7 @@ def clean_html (htmlText):
     clean_end = clean_start.partition(word_ends)[0]
     return clean_end
 
+#Transform into a Python Dictionary
 def curly_input_to_dict(curly_input):
     date_dict = {}
     date_list = []
@@ -52,12 +54,14 @@ def curly_input_to_dict(curly_input):
     print(date_dict)
     return date_dict
 
+#Process for scrapping a specific field in website using Beautiful Soup Library
 def soup_query (page_content):
     soup = BeautifulSoup(page_content, 'lxml')
     html_text = soup.find_all("textarea", {"id": "paste_code"})         
     text = clean_html(str(html_text))
     return text
 
+#Fill a Python dictionary from the specified yaml file which was scrapped from the website
 def fill_dict_from_yaml (text_yaml):
     user_dic = {}
     users_list = []
@@ -72,36 +76,16 @@ def fill_dict_from_yaml (text_yaml):
             if (str(key) != "Check-in history"):
                 user_dic[(key)]= value
             if (str(key) == "Check-in history"):
-                # print(value)
                 words =value.split(' ')
-                # print(words)
-                # for (i=0 in range(5):
-                #     type_list.append(words[i::5])
-                # date_list = type_list[0]
                 date_list = [words[x:x+5] for x in range(0, len(words), 5)]
-                # print(date_list)
                 user_dic[key] = date_list
-                # print(type_list)
-            # else:
-            #     # temp_list = str(value).splitlines()
-            #     # temp_list = temp_str.split(',')
-            #     print(str(value))
-            #     temp_list = str(value).partition(ent_separator)[0]
-            #     for entry in temp_list:
-                    
-            #         list_perlog = entry.split(',')
-            #         for log in list_perlog: 
-            #             print(log)
-            #             temp_key= str(log).partition(separator)[0]
-            #             temp_value = str(log).partition(separator)[2]
-            #             time_dict[(temp_key)] = temp_value
-            #         time_list.append(copy.deepcopy(time_dict))
-            #         user_dic[(key)] = time_list
+
         users_list.append(copy.deepcopy(user_dic))
-    # print(users_list)
     return users_list
 
-
+#POST call that returns if people where close at a given date range (NOT FULLY FUNCTIONAL)
+#First argument: key= m value = INTEGER
+#Second argument: key= dateRange value = {from: 'dd.mm.yyyy', to: 'dd.mm.yyyy'}  
 @app.route('/proximity_date_query', methods=['POST'])
 def proximity_date_query():
     if request.method == 'POST':
@@ -109,13 +93,7 @@ def proximity_date_query():
         distance = request.form['m']
         date_query = request.form['dateRange']
         date_dict = curly_input_to_dict(date_query)
-        # print(date_j["from"])
-        # to_date = date_j["to"]
-        
-        
-        # for key, value in date_dict.items():
-        #     print(date_dict[key])
-        # parsed_date = dateparser.parse(date_range_query)
+
 
         page = requests.get(full_url)
         try:
@@ -157,6 +135,8 @@ def proximity_date_query():
             return e
     return "Not OK"
 
+#POST call that returns binding box near people location (NOT FULLY FUNCTIONAL)
+#Using the coordinates, find the vector and then reverse it to get the perpenticular. Then by adding each point to the perpenticular you can get two extra points that can form a binding box
 @app.route('/name_date_query_bbox', methods=['POST'])
 def name_date_query_bbox():
     if request.method == 'POST':
@@ -192,6 +172,9 @@ def name_date_query_bbox():
             return e
     return "Not OK"
 
+#POST call that returns the location of one or more people at a given date.
+#First argument: key= name value = name1, name2, ..., nameN
+#Second argument: key= date value = dd.mm.yyyy  
 @app.route('/name_date_query', methods=['POST'])
 def name_date_query():
     if request.method == 'POST':
@@ -230,6 +213,9 @@ def name_date_query():
             return e
     return "Not OK"
 
+#POST call that returns people with the specified sex and age range.
+#First argument: key= age value = INTEGER
+#Second argument: key= sex value = STRING 
 @app.route('/age_sex_query', methods=['POST'])
 def age_sex_query():
     if request.method == 'POST':
@@ -267,11 +253,7 @@ def age_sex_query():
             print (e)
             return e
 
-@app.route('/')
-def get():
-    return {
-			"status": "Got new data"
-		}
+
 
 if __name__ == "__main__":
     # flask_app = Flask(__name__)
