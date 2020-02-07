@@ -1,0 +1,47 @@
+Part 1. (Coding)
+	A . Provide a REST endpoint that will fetch all profiles (with all details) using the following filters:
+		address = 127.0.0.1/age_sex_query
+		#First argument: key= age value = INTEGER
+		#Second argument: key= sex value = STRING 
+
+	B . Provide a REST endpoint that given a set of names and a date, it will return
+		1. A list of locations (coordinates), indicating the places those people were at that given date
+			address = 127.0.0.1/name_date_query
+			#First argument: key= name value = name1, name2, ..., nameN
+			#Second argument: key= date value = dd.mm.yyyy  
+		2. The locations are both coordinates and names of the locations (BONUS)
+			address = 127.0.0.1/name_date_query
+			#First argument: key= name value = name1, name2, ..., nameN
+			#Second argument: key= date value = dd.mm.yyyy  
+		3. A bounding box of those locations (BONUS) - ALMOST FINISHED
+			#Using the coordinates, find the vector and then reverse it to get the perpenticular. 
+			 Then by adding each point to the perpenticular you can get two extra points 
+			 Using the initial two points and the two new calculated, you can form a binding box
+			 
+	C . Provide a REST endpoint which given a proximity parameter M in meters, and a date range
+	 it will return the people who were closer than M meters among those dates - ALMOST FINISHED
+		#First argument: key= m value = INTEGER
+		#Second argument: key= dateRange value = {from: 'dd.mm.yyyy', to: 'dd.mm.yyyy'}  
+		The solution currently returns the location of each individual during that date range.
+		The distance between the individuals during a specific time can be calculated using : distance = math.sqrt( ((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2) )
+		
+Part 2 .
+	1. Which of the people above are most likely good friends?
+		Jim and Robert are for sure both Supporters of Omonoia
+
+	2. Where is Jim likely to be in the evening of 15.02.2020?
+		Probably at (34.7009° N, 33.0228° E)
+		
+	3. Where possibly was John in the evening of 15.01.2020?
+		He is from Pafos, relaxing near the tourist area near Pafos Castle
+		
+	4. Where possibly was Robert in the morning of 18.01.2020?
+		Learning Krav Maga at: 35.119102, 33.376864
+		
+	5. What do you believe is the marital status of Robert? (BONUS)
+		He has a kid
+		
+	6. What other intel could you infer about John and Robert? (BONUS)
+		
+	7. Which band could those 3 people have formed? (BONUS)
+		LED F ZEPPELIN :D
